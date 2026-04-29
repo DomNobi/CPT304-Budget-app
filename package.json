@@ -1,0 +1,22 @@
+{
+  "name": "cpt304-budget-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vanilla JS budget app with Jest coverage (CPT304)",
+  "scripts": {
+    "test": "jest --coverage",
+    "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ]
+  }
+}
