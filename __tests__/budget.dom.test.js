@@ -59,6 +59,14 @@ describe("budget.js (DOM integration)", () => {
     expect(global.updateChart).toHaveBeenCalledTimes(1);
   });
 
+  test("does not add expense when inputs are empty", () => {
+    const addExpense = document.querySelector(".add-expense");
+    click(addExpense);
+
+    expect(JSON.parse(localStorage.getItem("entry_list"))).toEqual([]);
+    expect(global.updateChart).toHaveBeenCalledTimes(1);
+  });
+
   test("adds an income entry and updates totals", () => {
     document.getElementById("income-title-input").value = "Salary";
     document.getElementById("income-amount-input").value = "100";
@@ -134,5 +142,53 @@ describe("budget.js (DOM integration)", () => {
 
     expect(JSON.parse(localStorage.getItem("entry_list"))).toEqual([]);
     expect(document.querySelectorAll("#all .list li")).toHaveLength(0);
+  });
+
+  test("edits an income entry: copies values to inputs and removes entry", () => {
+    document.getElementById("income-title-input").value = "Bonus";
+    document.getElementById("income-amount-input").value = "30";
+    click(document.querySelector(".add-income"));
+
+    const editBtn = document.querySelector("#all .list li div#edit");
+    click(editBtn);
+
+    expect(document.getElementById("income-title-input").value).toBe("Bonus");
+    expect(document.getElementById("income-amount-input").value).toBe("30");
+
+    expect(JSON.parse(localStorage.getItem("entry_list"))).toEqual([]);
+    expect(document.querySelectorAll("#all .list li")).toHaveLength(0);
+  });
+
+  test("switches tabs and updates visibility and focus", () => {
+    const expenseBtn = document.querySelector(".first-tab");
+    const incomeBtn = document.querySelector(".second-tab");
+    const allBtn = document.querySelector(".third-tab");
+    const expenseEl = document.querySelector("#expense");
+    const incomeEl = document.querySelector("#income");
+    const allEl = document.querySelector("#all");
+
+    click(expenseBtn);
+    expect(expenseEl.classList.contains("hide")).toBe(false);
+    expect(incomeEl.classList.contains("hide")).toBe(true);
+    expect(allEl.classList.contains("hide")).toBe(true);
+    expect(expenseBtn.classList.contains("focus")).toBe(true);
+    expect(incomeBtn.classList.contains("focus")).toBe(false);
+    expect(allBtn.classList.contains("focus")).toBe(false);
+
+    click(incomeBtn);
+    expect(expenseEl.classList.contains("hide")).toBe(true);
+    expect(incomeEl.classList.contains("hide")).toBe(false);
+    expect(allEl.classList.contains("hide")).toBe(true);
+    expect(expenseBtn.classList.contains("focus")).toBe(false);
+    expect(incomeBtn.classList.contains("focus")).toBe(true);
+    expect(allBtn.classList.contains("focus")).toBe(false);
+
+    click(allBtn);
+    expect(expenseEl.classList.contains("hide")).toBe(true);
+    expect(incomeEl.classList.contains("hide")).toBe(true);
+    expect(allEl.classList.contains("hide")).toBe(false);
+    expect(expenseBtn.classList.contains("focus")).toBe(false);
+    expect(incomeBtn.classList.contains("focus")).toBe(false);
+    expect(allBtn.classList.contains("focus")).toBe(true);
   });
 });
