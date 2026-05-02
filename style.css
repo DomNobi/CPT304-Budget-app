@@ -11,12 +11,42 @@
   font-style: normal;
 }
 
+:root {
+  --bg: #1b1b1b;
+  --panel: #2a0355;
+  --panel-2: #ffffff;
+  --text: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --text-dark: #1a0034;
+  --accent: #f0624d;
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --gap: clamp(12px, 2.5vw, 24px);
+  --pad: clamp(16px, 3vw, 28px);
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+}
+
 body {
-  background-color: #222;
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  background: radial-gradient(
+      1200px 800px at 10% -10%,
+      rgba(240, 98, 77, 0.18),
+      transparent 60%
+    ),
+    var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: clamp(12px, 3vw, 32px);
   font-family: "Gilroy";
+  font-size: clamp(14px, 1.2vw + 10px, 18px);
 }
 
 * {
+  box-sizing: border-box;
   font-family: "Gilroy";
   list-style: none;
   text-decoration: none;
@@ -40,52 +70,67 @@ input[type="number"] {
 }
 
 .budget-container {
-  position: absolute;
-  width: 360px;
-  height: 100vh;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
-  background-color: #2a0355;
+  width: min(100%, 1100px);
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "title"
+    "header"
+    "dashboard";
+  gap: var(--gap);
+  padding: var(--pad);
+  background-color: var(--panel);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
 .budget-container .app-title {
-  margin-top: 20px;
-  margin-left: 20px;
+  grid-area: title;
+  margin: 0;
 }
 
 .budget-container .app-title a {
-  color: #fff;
+  color: var(--text);
+  font-size: clamp(1rem, 1vw + 0.8rem, 1.3rem);
 }
 .budget-container .app-title a b {
   font-family: "Gilroy Bold";
 }
 
 .budget-header {
+  grid-area: header;
+  padding: clamp(12px, 2vw, 20px);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .budget-header .balance {
-  margin-top: 25px;
-  margin-left: 20px;
+  margin: 0;
 }
 
 .budget-header .balance .title {
-  color: #fff;
-  font-size: 1em;
+  color: var(--text);
+  font-size: clamp(0.95rem, 0.8vw + 0.6rem, 1.1rem);
   font-family: "Gilroy Bold";
 }
 
 .budget-header .balance .value {
-  color: #fff;
-  font-size: 2em;
-  margin-top: 10px;
+  color: var(--text);
+  font-size: clamp(1.6rem, 2vw + 1rem, 2.6rem);
+  margin-top: 8px;
   font-family: "Gilroy Bold";
 }
 
 .budget-header .account {
-  display: block;
-  width: 310px;
-  margin: 25px auto 0;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: clamp(8px, 2vw, 16px);
+  align-items: center;
+  width: 100%;
+  margin: clamp(16px, 3vw, 28px) 0 0;
   line-height: 1.7em;
   text-align: center;
 }
@@ -93,69 +138,79 @@ input[type="number"] {
 .budget-header .account .income,
 .chart,
 .outcome {
-  height: 50px;
-  display: inline-block;
-  width: 100px;
-  vertical-align: middle;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
 }
 
 .budget-header .account .income .title {
-  color: #fff;
-  opacity: 0.5;
+  color: var(--text);
+  opacity: 0.6;
 }
 .budget-header .account .income .income-total {
-  color: #fff;
+  color: var(--text);
   font-family: "Gilroy Bold";
 }
 
 .budget-header .account .outcome .title {
-  color: #fff;
-  opacity: 0.5;
+  color: var(--text);
+  opacity: 0.6;
 }
 .budget-header .account .outcome .outcome-total {
-  color: #f0624d;
+  color: var(--accent);
   font-family: "Gilroy Bold";
+}
+
+.chart {
+  width: clamp(70px, 14vw, 110px);
+  height: clamp(70px, 14vw, 110px);
+  margin: 0 auto;
 }
 
 /**************   DASHBOARD    ***********/
 .budget-dashboard {
-  display: block;
-  width: 360px;
-  min-height: 470px;
-  background-color: #fff;
-  margin-top: 35px;
-  border-radius: 30px 30px 0 0;
+  grid-area: dashboard;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  background-color: var(--panel-2);
+  border-radius: var(--radius-lg);
+  padding: clamp(12px, 2.5vw, 24px);
+  color: var(--text-dark);
 }
 
 .budget-dashboard .dash-title {
   display: inline-block;
-  color: #1a0034;
-  font-size: 1.7em;
-  margin-left: 20px;
-  margin-top: 30px;
+  color: var(--text-dark);
+  font-size: clamp(1.3rem, 1.4vw + 0.8rem, 1.8rem);
+  margin: 0;
   font-family: "Gilroy Bold";
 }
 
 .toggle {
-  display: block;
-  margin-top: 30px;
-  margin-left: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: clamp(14px, 2.2vw, 24px);
 }
 
 .toggle .first-tab,
-.second-tab,
-.third-tab {
+.toggle .second-tab,
+.toggle .third-tab {
   display: inline-block;
   cursor: pointer;
-  font-size: 1.1em;
-  color: #1a0034;
+  font-size: clamp(1rem, 0.9vw + 0.7rem, 1.15rem);
+  color: var(--text-dark);
   font-family: "Gilroy Bold";
   opacity: 0.4;
 }
 
 .toggle .second-tab,
-.third-tab {
-  margin-left: 10px;
+.toggle .third-tab {
+  margin-left: 0;
 }
 
 .focus {
@@ -172,151 +227,131 @@ input[type="number"] {
   -moz-user-select: auto;
   -ms-user-select: auto;
   user-select: auto;
+  color: var(--text-dark);
 }
 
 /* ////////// ALL ///////////// */
 .budget-dashboard #all {
-  width: 360px;
+  width: 100%;
   height: auto;
   position: relative;
 }
 .budget-dashboard #all ul {
-  width: 360px;
-  height: 270px;
+  width: 100%;
   list-style: none;
   margin: 0;
   padding: 0;
-  margin-top: 20px;
-  overflow-x: auto;
+  margin-top: 16px;
+  max-height: clamp(200px, 32vh, 340px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .budget-dashboard #all ul.list li {
   position: relative;
   font-size: 1em;
-}
-
-.budget-dashboard #all ul.list li * {
-  display: inline-block;
-  height: 30px;
-  vertical-align: middle;
-}
-
-.budget-dashboard #all ul.list li .entry {
-  width: 250px;
-  height: auto;
-  padding-left: 20px;
-  margin-bottom: 10px;
-  word-wrap: break-word;
-  font-family: "Gilroy Bold";
-}
-
-.budget-dashboard #all ul.list li #edit {
-  visibility: hidden;
-}
-
-.budget-dashboard #all ul.list li #delete {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  right: 20px;
-  cursor: pointer;
-  background-image: url("icon/trash.png");
-  background-size: 20px 20px;
-  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: rgba(26, 0, 52, 0.04);
 }
 
 .budget-dashboard #all ul.list li.income {
 }
 .budget-dashboard #all ul.list li.expense {
-  color: #f0624d;
+  color: var(--accent);
 }
 
 /* //////// EXPENSE ////////// */
 .budget-dashboard #expense {
-  width: 360px;
-  min-height: 339px;
+  width: 100%;
+  min-height: 0;
   position: relative;
 }
 
 .budget-dashboard #expense .input {
-  position: absolute;
-  display: block;
-  width: 360px;
-  bottom: 0;
-  border-top: 1px solid #ccc;
-}
-
-.budget-dashboard #expense .input * {
-  display: inline-block;
-  vertical-align: middle;
+  position: static;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid #ddd;
 }
 
 .budget-dashboard #expense .input input#expense-title-input {
   height: 40px;
-  width: 150px;
-  padding-left: 10px;
-  font-size: 1.2em;
+  flex: 1 1 160px;
+  min-width: 0;
+  padding: 0 12px;
+  font-size: 1.05em;
   font-family: "Gilroy";
-  margin: 5px;
-  margin-left: 10px;
-  border-radius: 10px 0 0 10px;
-  border: none;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  background: #faf7ff;
 }
 
 .budget-dashboard #expense .input input#expense-amount-input {
   height: 40px;
-  width: 110px;
-  padding-left: 10px;
-  font-size: 1.2em;
+  flex: 0 0 120px;
+  min-width: 100px;
+  padding: 0 12px;
+  font-size: 1.05em;
   font-family: "Gilroy";
-  margin: 5px;
-  margin-left: -10px;
-  border-radius: 0 10px 10px 0;
-  border: none;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  background: #faf7ff;
 }
 
 .budget-dashboard #expense .input .add-expense img {
   width: 40px;
   height: 40px;
   cursor: pointer;
+  display: block;
 }
 
 .budget-dashboard #expense ul {
-  width: 360px;
-  min-height: 285px;
+  width: 100%;
   list-style: none;
   margin: 0;
   padding: 0;
-  margin-top: 20px;
-  overflow-x: auto;
+  margin-top: 16px;
+  max-height: clamp(200px, 32vh, 340px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .budget-dashboard #expense ul.list li {
   position: relative;
   font-size: 1em;
-}
-
-.budget-dashboard #expense ul.list li * {
-  display: inline-block;
-  height: 30px;
-  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: rgba(240, 98, 77, 0.08);
 }
 
 .budget-dashboard #expense ul.list li .entry {
-  width: 250px;
+  flex: 1;
+  min-width: 0;
   height: auto;
-  padding-left: 20px;
-  margin-bottom: 10px;
   word-wrap: break-word;
   font-family: "Gilroy Bold";
-  color: #f0624d;
+  color: var(--accent);
 }
 
 .budget-dashboard #expense ul.list li #edit {
-  position: absolute;
   width: 20px;
   height: 20px;
-  right: 50px;
   cursor: pointer;
   background-image: url("icon/edit.png");
   background-size: 20px 20px;
@@ -324,10 +359,8 @@ input[type="number"] {
 }
 
 .budget-dashboard #expense ul.list li #delete {
-  position: absolute;
   width: 20px;
   height: 20px;
-  right: 20px;
   cursor: pointer;
   background-image: url("icon/trash.png");
   background-size: 20px 20px;
@@ -336,89 +369,89 @@ input[type="number"] {
 
 /* /////// INCOME //////// */
 .budget-dashboard #income {
-  width: 360px;
-  min-height: 339px;
+  width: 100%;
+  min-height: 0;
   position: relative;
 }
 
 .budget-dashboard #income .input {
-  position: absolute;
-  display: block;
-  width: 360px;
-  bottom: 0;
-  border-top: 1px solid #ccc;
-}
-
-.budget-dashboard #income .input * {
-  display: inline-block;
-  vertical-align: middle;
+  position: static;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid #ddd;
 }
 
 .budget-dashboard #income .input input#income-title-input {
   height: 40px;
-  width: 150px;
-  padding-left: 10px;
-  font-size: 1.2em;
+  flex: 1 1 160px;
+  min-width: 0;
+  padding: 0 12px;
+  font-size: 1.05em;
   font-family: "Gilroy";
-  margin: 5px;
-  margin-left: 10px;
-  border-radius: 10px 0 0 10px;
-  border: none;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  background: #faf7ff;
 }
 
 .budget-dashboard #income .input input#income-amount-input {
   height: 40px;
-  width: 110px;
-  padding-left: 10px;
-  font-size: 1.2em;
+  flex: 0 0 120px;
+  min-width: 100px;
+  padding: 0 12px;
+  font-size: 1.05em;
   font-family: "Gilroy";
-  margin: 5px;
-  margin-left: -10px;
-  border-radius: 0 10px 10px 0;
-  border: none;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  background: #faf7ff;
 }
 
 .budget-dashboard #income .input .add-income img {
   width: 40px;
   height: 40px;
   cursor: pointer;
+  display: block;
 }
 
 .budget-dashboard #income ul {
-  width: 360px;
-  height: auto;
+  width: 100%;
   list-style: none;
   margin: 0;
   padding: 0;
-  margin-top: 20px;
-  overflow-x: auto;
+  margin-top: 16px;
+  max-height: clamp(200px, 32vh, 340px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .budget-dashboard #income ul.list li {
   position: relative;
   font-size: 1em;
-}
-
-.budget-dashboard #income ul.list li * {
-  display: inline-block;
-  height: 30px;
-  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: rgba(26, 0, 52, 0.04);
 }
 
 .budget-dashboard #income ul.list li .entry {
-  width: 250px;
+  flex: 1;
+  min-width: 0;
   height: auto;
-  padding-left: 20px;
-  margin-bottom: 10px;
   word-wrap: break-word;
   font-family: "Gilroy Bold";
 }
 
 .budget-dashboard #income ul.list li #edit {
-  position: absolute;
   width: 20px;
   height: 20px;
-  right: 50px;
   cursor: pointer;
   background-image: url("icon/edit.png");
   background-size: 20px 20px;
@@ -426,12 +459,69 @@ input[type="number"] {
 }
 
 .budget-dashboard #income ul.list li #delete {
-  position: absolute;
   width: 20px;
   height: 20px;
-  right: 20px;
   cursor: pointer;
   background-image: url("icon/trash.png");
   background-size: 20px 20px;
   background-repeat: no-repeat;
+}
+
+.budget-dashboard ul.list li #edit,
+.budget-dashboard ul.list li #delete {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  background-size: 20px 20px;
+  background-repeat: no-repeat;
+  flex: 0 0 20px;
+}
+
+.budget-dashboard ul.list li #edit {
+  background-image: url("icon/edit.png");
+}
+
+.budget-dashboard ul.list li #delete {
+  background-image: url("icon/trash.png");
+}
+
+.budget-dashboard #all ul.list li #edit {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  body {
+    padding: 0;
+  }
+
+  .budget-container {
+    border-radius: 0;
+    min-height: 100vh;
+    min-height: 100svh;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .budget-header .account {
+    grid-template-columns: 1fr;
+    row-gap: 12px;
+  }
+
+  .chart {
+    order: 2;
+  }
+}
+
+@media (min-width: 900px) {
+  .budget-container {
+    grid-template-columns: minmax(280px, 1fr) minmax(360px, 1.2fr);
+    grid-template-areas:
+      "title dashboard"
+      "header dashboard";
+  }
+
+  .budget-dashboard {
+    min-height: 560px;
+  }
 }
