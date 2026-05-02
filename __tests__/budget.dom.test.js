@@ -1,3 +1,5 @@
+const CasStore = require("../storage.js");
+
 function setBudgetAppDom() {
   document.body.innerHTML = `
     <div class="budget-container">
@@ -55,7 +57,7 @@ describe("budget.js (DOM integration)", () => {
     const addIncome = document.querySelector(".add-income");
     click(addIncome);
 
-    expect(JSON.parse(localStorage.getItem("entry_list"))).toEqual([]);
+    expect(CasStore.loadState().entries).toEqual([]);
     expect(global.updateChart).toHaveBeenCalledTimes(1);
   });
 
@@ -63,7 +65,7 @@ describe("budget.js (DOM integration)", () => {
     const addExpense = document.querySelector(".add-expense");
     click(addExpense);
 
-    expect(JSON.parse(localStorage.getItem("entry_list"))).toEqual([]);
+    expect(CasStore.loadState().entries).toEqual([]);
     expect(global.updateChart).toHaveBeenCalledTimes(1);
   });
 
@@ -73,9 +75,13 @@ describe("budget.js (DOM integration)", () => {
 
     click(document.querySelector(".add-income"));
 
-    const stored = JSON.parse(localStorage.getItem("entry_list"));
+    const stored = CasStore.loadState().entries;
     expect(stored).toHaveLength(1);
-    expect(stored[0]).toEqual({ type: "income", title: "Salary", amount: 100 });
+    expect(stored[0]).toMatchObject({
+      type: "income",
+      title: "Salary",
+      amount: 100,
+    });
 
     expect(document.querySelector(".income-total").innerHTML).toBe(
       "<small>$</small>100"
@@ -99,9 +105,13 @@ describe("budget.js (DOM integration)", () => {
 
     click(document.querySelector(".add-expense"));
 
-    const stored = JSON.parse(localStorage.getItem("entry_list"));
+    const stored = CasStore.loadState().entries;
     expect(stored).toHaveLength(1);
-    expect(stored[0]).toEqual({ type: "expense", title: "Rent", amount: 50 });
+    expect(stored[0]).toMatchObject({
+      type: "expense",
+      title: "Rent",
+      amount: 50,
+    });
 
     expect(document.querySelector(".income-total").innerHTML).toBe(
       "<small>$</small>0"
@@ -124,7 +134,7 @@ describe("budget.js (DOM integration)", () => {
     const deleteBtn = document.querySelector("#all .list li div#delete");
     click(deleteBtn);
 
-    expect(JSON.parse(localStorage.getItem("entry_list"))).toEqual([]);
+    expect(CasStore.loadState().entries).toEqual([]);
     expect(document.querySelectorAll("#all .list li")).toHaveLength(0);
     expect(global.updateChart).toHaveBeenLastCalledWith(0, 0);
   });
@@ -140,7 +150,7 @@ describe("budget.js (DOM integration)", () => {
     expect(document.getElementById("expense-title-input").value).toBe("Food");
     expect(document.getElementById("expense-amount-input").value).toBe("20");
 
-    expect(JSON.parse(localStorage.getItem("entry_list"))).toEqual([]);
+    expect(CasStore.loadState().entries).toEqual([]);
     expect(document.querySelectorAll("#all .list li")).toHaveLength(0);
   });
 
@@ -155,7 +165,7 @@ describe("budget.js (DOM integration)", () => {
     expect(document.getElementById("income-title-input").value).toBe("Bonus");
     expect(document.getElementById("income-amount-input").value).toBe("30");
 
-    expect(JSON.parse(localStorage.getItem("entry_list"))).toEqual([]);
+    expect(CasStore.loadState().entries).toEqual([]);
     expect(document.querySelectorAll("#all .list li")).toHaveLength(0);
   });
 

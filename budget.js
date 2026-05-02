@@ -23,7 +23,14 @@ const addIncome = document.querySelector(".add-income");
 const incomeTitle = document.getElementById("income-title-input");
 const incomeAmount = document.getElementById("income-amount-input");
 
+//CAS STORE
+const CasStore =
+  typeof module === "object" && module.exports
+    ? require("./storage")
+    : window.CasStore;
+
 //VARIABLES
+let STATE;
 let ENTRY_LIST;
 let balance = 0,
   income = 0,
@@ -31,9 +38,45 @@ let balance = 0,
 const DELETE = "delete",
   EDIT = "edit";
 
-// LOOK IF THERE IS DATA IN LOCAL STORAGE
-ENTRY_LIST = JSON.parse(localStorage.getItem("entry_list")) || [];
-updateUI();
+function applyState(state) {
+  STATE = state;
+  ENTRY_LIST = state.entries;
+}
+
+function syncFromStorage(persistIfNeeded) {
+  var state = CasStore.loadState({ persistIfNeeded: persistIfNeeded });
+  applyState(state);
+  updateUI();
+}
+
+// Commit one operation with CAS and refresh the UI from the new state.
+function commitAndRender(op) {
+  var result = CasStore.commitWithCas(op, { maxRetries: 5 });
+  applyState(result.state);
+  updateUI();
+
+  if (!result.ok) {
+    // Notify user when concurrent changes cannot be merged.
+    console.warn("CAS conflict: please retry your action.");
+  }
+}
+
+function findEntryById(id) {
+  for (var i = 0; i < ENTRY_LIST.length; i += 1) {
+    if (ENTRY_LIST[i].id === id) return ENTRY_LIST[i];
+  }
+  return null;
+}
+
+// INITIAL LOAD
+syncFromStorage(true);
+
+// Sync from other tabs when storage changes.
+window.addEventListener("storage", function (event) {
+  if (event.key === CasStore.STORAGE_KEY) {
+    syncFromStorage(false);
+  }
+});
 
 //EVENT LISTENERS
 expenseBtn.addEventListener("click", function () {
@@ -60,14 +103,13 @@ addExpense.addEventListener("click", function () {
   if (!expenseTitle.value || !expenseAmount.value) return;
 
   // ADD INPUTs TO ENTRY_LIST
-  let expense = {
+  var expense = {
+    id: CasStore.generateId(),
     type: "expense",
     title: expenseTitle.value,
     amount: +expenseAmount.value,
   };
-  ENTRY_LIST.push(expense);
-
-  updateUI();
+  commitAndRender(CasStore.createAddOp(expense));
   clearInput([expenseTitle, expenseAmount]);
 });
 
@@ -76,14 +118,13 @@ addIncome.addEventListener("click", function () {
   if (!incomeTitle.value || !incomeAmount.value) return;
 
   // ADD INPUTs TO ENTRY_LIST
-  let income = {
+  var income = {
+    id: CasStore.generateId(),
     type: "income",
     title: incomeTitle.value,
     amount: +incomeAmount.value,
   };
-  ENTRY_LIST.push(income);
-
-  updateUI();
+  commitAndRender(CasStore.createAddOp(income));
   clearInput([incomeTitle, incomeAmount]);
 });
 
@@ -95,21 +136,25 @@ allList.addEventListener("click", deleteOrEdit);
 function deleteOrEdit(event) {
   const targetBtn = event.target;
   const entry = targetBtn.parentNode;
+  const entryId = entry.getAttribute("data-id");
+
+  if (!entryId) return;
 
   if (targetBtn.id == EDIT) {
-    editEntry(entry);
+    editEntry(entryId);
   } else if (targetBtn.id == DELETE) {
-    deleteEntry(entry);
+    deleteEntry(entryId);
   }
 }
 
-function deleteEntry(entry) {
-  ENTRY_LIST.splice(entry.id, 1);
-  updateUI();
+function deleteEntry(entryId) {
+  commitAndRender(CasStore.createDeleteOp(entryId));
 }
 
-function editEntry(entry) {
-  const ENTRY = ENTRY_LIST[entry.id];
+function editEntry(entryId) {
+  const ENTRY = findEntryById(entryId);
+
+  if (!ENTRY) return;
 
   if (ENTRY.type == "income") {
     incomeTitle.value = ENTRY.title;
@@ -118,7 +163,7 @@ function editEntry(entry) {
     expenseTitle.value = ENTRY.title;
     expenseAmount.value = ENTRY.amount;
   }
-  deleteEntry(entry);
+  deleteEntry(entryId);
 }
 
 function updateUI() {
@@ -135,20 +180,19 @@ function updateUI() {
 
   clearElement([expenseList, incomeList, allList]);
 
-  ENTRY_LIST.forEach((entry, index) => {
+  ENTRY_LIST.forEach((entry) => {
     if (entry.type == "expense") {
-      showEntry(expenseList, entry.type, entry.title, entry.amount, index);
+      showEntry(expenseList, entry.type, entry.title, entry.amount, entry.id);
     } else if (entry.type == "income") {
-      showEntry(incomeList, entry.type, entry.title, entry.amount, index);
+      showEntry(incomeList, entry.type, entry.title, entry.amount, entry.id);
     }
-    showEntry(allList, entry.type, entry.title, entry.amount, index);
+    showEntry(allList, entry.type, entry.title, entry.amount, entry.id);
   });
   updateChart(income, outcome);
-  localStorage.setItem("entry_list", JSON.stringify(ENTRY_LIST));
 }
 
 function showEntry(list, type, title, amount, id) {
-  const entry = `<li id="${id}" class="${type}">
+  const entry = `<li data-id="${id}" class="${type}">
                     <div class="entry">${title} : $${amount}</div>
                     <div id="edit"></div>
                     <div id="delete"></div>
